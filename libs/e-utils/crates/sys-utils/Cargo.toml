@@ -1,0 +1,36 @@
+[features]
+dns = ["cfg-if", "socket2", "libc", "winapi"]
+traceroute = ["pnet", "rand", "async-std", "dns", "libc", "windows"]
+default = []
+
+[dependencies]
+cfg-if = { version = "^1.0", optional = true }
+socket2 = { version = "^0.4", optional = true }
+
+pnet = { version = "0.30.0", optional = true }
+rand = { version = "0.8.5", optional = true }
+async-std = { version = "1.9.0", optional = true }
+libc = { version = "0.2", optional = true }
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.30.0", features = [
+    "Win32_Foundation",
+    "Win32_NetworkManagement_IpHelper",
+    "Win32_Networking_WinSock",
+], optional = true }
+winapi = { version = "^0.3", features = [
+    "windef",
+    "ws2def",
+    "ws2tcpip",
+], default-features = false, optional = true }
+
+[package]
+name = "sys-utils"
+version = "0.1.0"
+edition = "2021"
+authors = ["1379 <EternalNightYeah2@yeah.net>"]
+description = "cross platform get OS utils api"
+license-file = "../../GNU-LICENSE"
+repository = ""
+rust-version = "1.62.0"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
