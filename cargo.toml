@@ -70,7 +70,7 @@ codegen-units = 1
 [package]
 name = "e-netscan"
 version = "0.1.0"
-authors = ["Eternal <EternalNight996@gmail.com>"]
+authors = ["Eternal <EternalNight996@gmail.com,EternalNight996@gmail.com>"]
 license-file = "GNU-LICENSE"
 repository = ""
 edition = "2021"

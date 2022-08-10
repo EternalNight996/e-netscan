@@ -90,7 +90,7 @@ required-features = []
 [package]
 name = "e-libscanner"
 version = "0.1.0"
-authors = ["Eternal <EternalNightYeah2@yeah.net>"]
+authors = ["Eternal <EternalNight996@gmail.com, EternalNightYeah2@yeah.net>"]
 license-file = "GNU-LICENSE"
 repository = ""
 edition = "2021"
