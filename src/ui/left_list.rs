@@ -1,4 +1,4 @@
 #[derive(Debug, Default)]
-pub struct LeftList {
+pub(crate) struct LeftList {
     
 }

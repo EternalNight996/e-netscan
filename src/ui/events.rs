@@ -15,7 +15,7 @@ use std::path::PathBuf;
 
 /// copy to clipboard state
 #[derive(Debug, Clone)]
-pub enum CopyToClipboardState {
+pub(crate) enum CopyToClipboardState {
     Scan,
 }
 impl Default for CopyToClipboardState {
@@ -26,18 +26,18 @@ impl Default for CopyToClipboardState {
 
 /// scan result of copy
 #[derive(Debug, Clone, Default)]
-pub struct ScanResultCopy {
-    pub state: button::State,
-    pub boolean: bool,
+pub(crate) struct ScanResultCopy {
+    pub(crate) state: button::State,
+    pub(crate) boolean: bool,
 }
 
 /// scan history result of download
 #[derive(Debug, Clone)]
-pub struct ScanHistoryDownload {
-    pub input_state: text_input::State,
-    pub input_value: String,
-    pub button_state: button::State,
-    pub button_boolean: bool,
+pub(crate) struct ScanHistoryDownload {
+    pub(crate) input_state: text_input::State,
+    pub(crate) input_value: String,
+    pub(crate) button_state: button::State,
+    pub(crate) button_boolean: bool,
 }
 impl Default for ScanHistoryDownload {
     fn default() -> Self {
@@ -60,15 +60,15 @@ impl Default for ScanHistoryDownload {
 }
 /// event occur model
 #[derive(Debug, Default)]
-pub struct EventOccur {
-    pub should_exit: bool,
+pub(crate) struct EventOccur {
+    pub(crate) should_exit: bool,
     log_enable: bool,
     scan_result_copy: ScanResultCopy,
     scan_history_download: ScanHistoryDownload,
 }
 /// event occur message model
 #[derive(Debug, Clone)]
-pub enum EventMessage {
+pub(crate) enum EventMessage {
     Occurred(iced_native::Event),
     LogOnOff(bool),
     ScanHistoryDownload(String),
@@ -78,7 +78,7 @@ pub enum EventMessage {
 }
 
 impl EventOccur {
-    pub fn update(&mut self, message: EventMessage) {
+    pub(crate) fn update(&mut self, message: EventMessage) {
         if self.log_enable {
             // saving event log
             log::info!("{:?}", message);
@@ -126,11 +126,11 @@ impl EventOccur {
             },
         }
     }
-    pub fn subscription(&self) -> Subscription<EventMessage> {
+    pub(crate) fn subscription(&self) -> Subscription<EventMessage> {
         // subscription event of message
         iced_native::subscription::events().map(EventMessage::Occurred)
     }
-    pub fn view(&mut self) -> Element<EventMessage> {
+    pub(crate) fn view(&mut self) -> Element<'_, EventMessage> {
         let enable_event_log = Toggler::new(
             self.log_enable,
             "事件\n日志开关".to_string(),

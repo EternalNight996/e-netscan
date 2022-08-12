@@ -10,13 +10,13 @@ mod left_list;
 mod styles;
 
 #[derive(Default, Debug)]
-pub struct App {
+pub(crate) struct App {
     cmd: cmd::Cmd,
     display_contents: display_content::DisplayContent,
     events: events::EventOccur,
 }
 #[derive(Debug, Clone)]
-pub enum Message {
+pub(crate) enum Message {
     Cmd(cmd::CmdMessage),
     Display(display_content::DisplayMessage),
     Events(events::EventMessage),
@@ -72,7 +72,7 @@ impl Application for App {
         Command::none()
     }
     /// window view element
-    fn view(&mut self) -> Element<Self::Message> {
+    fn view(&mut self) -> Element<'_, Self::Message> {
         let content = Column::new()
             .align_items(Alignment::Center)
             .spacing(3)

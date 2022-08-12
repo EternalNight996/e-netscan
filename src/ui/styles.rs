@@ -51,7 +51,7 @@ const FINISHED: Color = Color::from_rgb(
     0x20 as f32 / 255.0,
 );
 
-pub enum TitleBar {
+pub(crate) enum TitleBar {
     Active,
     Focused,
 }
@@ -72,7 +72,7 @@ impl container::StyleSheet for TitleBar {
     }
 }
 
-pub enum Pane {
+pub(crate) enum Pane {
     Active,
     Focused,
 }
@@ -91,7 +91,7 @@ impl container::StyleSheet for Pane {
     }
 }
 
-pub enum TextInput {
+pub(crate) enum TextInput {
     Primary,
 }
 impl text_input::StyleSheet for TextInput {
@@ -130,7 +130,7 @@ impl text_input::StyleSheet for TextInput {
         TEXT_SELECT_COLOR
     }
 }
-pub enum Button {
+pub(crate) enum Button {
     Primary,
     Destructive,
     Control,

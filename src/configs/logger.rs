@@ -5,7 +5,7 @@ use std::{
 };
 
 /// init log
-pub fn init_logger(name: &str, verbose_level: u8) {
+pub(crate) fn init_logger(name: &str, verbose_level: u8) {
     let path = Path::new(".").join(format!("{}.yaml", name));
     match log4rs::init_file(path.clone(), Default::default()) {
         Ok(_) => {}

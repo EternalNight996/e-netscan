@@ -20,7 +20,7 @@ use super::styles;
 
 /// progress model
 #[derive(Debug, Clone)]
-pub enum Progress {
+pub(crate) enum Progress {
     Started,
     Advanced(f32, f32, usize),
     Finished,
@@ -28,7 +28,7 @@ pub enum Progress {
 }
 /// progress state model 
 #[derive(Debug)]
-pub enum State {
+pub(crate) enum State {
     Ready(String),
     Starting {
         model: ScanModelType,
@@ -40,7 +40,7 @@ pub enum State {
 }
 /// command model of message
 #[derive(Debug, Clone)]
-pub enum CmdMessage {
+pub(crate) enum CmdMessage {
     Input(String),
     ExampleSelected(ExampleCmdList),
     Scan(ScanMessage),
@@ -48,7 +48,7 @@ pub enum CmdMessage {
 }
 /// command model
 #[derive(Default, Debug, Clone)]
-pub struct Cmd {
+pub(crate) struct Cmd {
     scan: Scan,
     input: CmdInput,
     example_list: pick_list::State<ExampleCmdList>,
@@ -57,13 +57,13 @@ pub struct Cmd {
 
 /// command input model
 #[derive(Debug, Default, Clone)]
-pub struct CmdInput {
-    pub state: text_input::State,
-    pub value: String,
+pub(crate) struct CmdInput {
+    pub(crate) state: text_input::State,
+    pub(crate) value: String,
 }
 /// command example model
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ExampleCmdList {
+pub(crate) enum ExampleCmdList {
     Host,
     Port,
     AsyncHost,
@@ -223,7 +223,7 @@ ARGS:
 const VERSION_TEMPLATE_CONTENT: &'static str = "VERSION = 0.1.0;";
 
 impl ExampleCmdList {
-    pub fn get_template(&self) -> String {
+    pub(crate) fn get_template(&self) -> String {
         let handle = |x: &[&'static str]| x.iter().map(|x| format!("{} ", x)).collect::<String>();
         match self {
             ExampleCmdList::Host => handle(&HOST_TEMPLATE),
@@ -245,7 +245,7 @@ impl Default for ExampleCmdList {
     }
 }
 impl ExampleCmdList {
-    pub const ALL: [Self; 10] = [
+    pub(crate) const ALL: [Self; 10] = [
         Self::Host,
         Self::Port,
         Self::AsyncHost,
@@ -280,7 +280,7 @@ impl std::fmt::Display for ExampleCmdList {
 }
 /// 扫描消息体模块
 #[derive(Debug, Clone)]
-pub enum ScanMessage {
+pub(crate) enum ScanMessage {
     Ready(String),
     Stop,
     StartProgressed((usize, Progress)),
@@ -288,7 +288,7 @@ pub enum ScanMessage {
 
 /// 扫描按钮触发模块
 #[derive(Debug, Clone)]
-pub enum ScanState {
+pub(crate) enum ScanState {
     Ready {
         button: button::State,
     },
@@ -305,7 +305,7 @@ pub enum ScanState {
 }
 /// scan model
 #[derive(Debug, Clone)]
-pub struct Scan {
+pub(crate) struct Scan {
     id: usize,
     state: ScanState,
 }
@@ -321,7 +321,7 @@ impl Default for Scan {
 }
 
 impl Scan {
-    pub fn update(&mut self, message: ScanMessage) {
+    pub(crate) fn update(&mut self, message: ScanMessage) {
         match message {
             // init state
             ScanMessage::Ready(cmd) => {
@@ -386,7 +386,7 @@ impl Scan {
             }
         }
     }
-    pub fn subscription(&self) -> Subscription<ScanMessage> {
+    pub(crate) fn subscription(&self) -> Subscription<ScanMessage> {
         match &self.state {
             ScanState::Starting { cmd, .. } => {
                 // subscription task
@@ -398,10 +398,10 @@ impl Scan {
 }
 
 impl Cmd {
-    pub fn subscription(&self) -> Subscription<CmdMessage> {
+    pub(crate) fn subscription(&self) -> Subscription<CmdMessage> {
         self.scan.subscription().map(CmdMessage::Scan)
     }
-    pub fn update(&mut self, ctx: CmdMessage) {
+    pub(crate) fn update(&mut self, ctx: CmdMessage) {
         match ctx {
             CmdMessage::Input(value) => self.input.value = value,
             CmdMessage::ExampleSelected(cmd) => {
@@ -419,7 +419,7 @@ impl Cmd {
             },
         }
     }
-    pub fn view(&mut self) -> Element<CmdMessage> {
+    pub(crate) fn view(&mut self) -> Element<'_, CmdMessage> {
         // command input ui
         let input = text_input::TextInput::new(
             &mut self.input.state,
@@ -501,7 +501,7 @@ impl Cmd {
     }
 }
 ///  scanning
-pub fn scan_run<I: 'static + Hash + Copy + Send + Sync, T: ToString>(
+pub(crate) fn scan_run<I: 'static + Hash + Copy + Send + Sync, T: ToString>(
     id: I,
     cmd: T,
 ) -> Subscription<(I, Progress)> {

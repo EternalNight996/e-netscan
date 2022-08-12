@@ -12,10 +12,10 @@ use std::thread::sleep;
 use std::time::Duration;
 
 // share static datas
-pub static DATAS: Lazy<Datas> = Lazy::new(|| Datas::default());
+pub(crate) static DATAS: Lazy<Datas> = Lazy::new(|| Datas::default());
 
 #[derive(Debug, Clone)]
-pub enum ScanResultType {
+pub(crate) enum ScanResultType {
     Host(Vec<HostInfo>),
     Port(HashMap<IpAddr, Vec<PortInfo>>),
     Os(Vec<ProbeResult>),
@@ -26,7 +26,7 @@ pub enum ScanResultType {
 }
 impl ScanResultType {
     #[allow(dead_code)]
-    pub fn len(&self) -> usize {
+    pub(crate) fn len(&self) -> usize {
         match self {
             ScanResultType::Host(d) => d.len(),
             ScanResultType::Port(d) => d.len(),
@@ -43,26 +43,26 @@ impl Default for ScanResultType {
         ScanResultType::None(None)
     }
 }
-pub type ScanHistory = Vec<(ScanResultType, i64)>;
+pub(crate) type ScanHistory = Vec<(ScanResultType, i64)>;
 
 #[derive(Default, Debug)]
-pub struct Datas {
-    pub scan: ScanData,
-    pub sysinfo: SystemInfoData,
+pub(crate) struct Datas {
+    pub(crate) scan: ScanData,
+    pub(crate) sysinfo: SystemInfoData,
 }
 #[derive(Debug)]
-pub struct ScanData {
-    pub results: Arc<Mutex<ScanResultType>>,
-    pub history: Arc<RwLock<ScanHistory>>,
-    pub locked: Arc<Mutex<bool>>,
+pub(crate) struct ScanData {
+    pub(crate) results: Arc<Mutex<ScanResultType>>,
+    pub(crate) history: Arc<RwLock<ScanHistory>>,
+    pub(crate) locked: Arc<Mutex<bool>>,
     /// timeout /ms
-    pub timeout: u64,
+    pub(crate) timeout: u64,
     /// timeout count
-    pub timeout_count: u64,
+    pub(crate) timeout_count: u64,
     /// stop tasks
-    pub stop: Arc<Mutex<bool>>,
+    pub(crate) stop: Arc<Mutex<bool>>,
     /// finished time /ms
-    pub finished_time: Arc<RwLock<f64>>,
+    pub(crate) finished_time: Arc<RwLock<f64>>,
 }
 
 impl Default for ScanData {
@@ -80,7 +80,7 @@ impl Default for ScanData {
 }
 impl ScanData {
     /// result to vec
-    pub fn result_to_vec(&self) -> Result<Vec<String>, String> {
+    pub(crate) fn result_to_vec(&self) -> Result<Vec<String>, String> {
         match self.results.lock() {
             Ok(r) => Ok(match &*r {
                 ScanResultType::Host(data) => {
@@ -117,7 +117,7 @@ impl ScanData {
         }
     }
     /// result to string
-    pub fn result_to_string(&self) -> Result<String, String> {
+    pub(crate) fn result_to_string(&self) -> Result<String, String> {
         match self.results.lock() {
             Ok(r) => Ok(match &*r {
                 ScanResultType::Host(data) => {
@@ -150,7 +150,7 @@ impl ScanData {
         }
     }
     /// watting for scan of end
-    pub fn waiting_for_lock(&self) {
+    pub(crate) fn waiting_for_lock(&self) {
         let mut n = 0;
         loop {
             if !*self.locked.lock().unwrap() || n > self.timeout_count {
@@ -162,23 +162,23 @@ impl ScanData {
         }
     }
     /// stop tasks
-    pub fn set_stop(&self, value: bool) {
+    pub(crate) fn set_stop(&self, value: bool) {
         *self.stop.lock().unwrap() = value;
     }
     /// set memory safety lock 
-    pub fn set_locked(&self, value: bool) {
+    pub(crate) fn set_locked(&self, value: bool) {
         *self.locked.lock().unwrap() = value;
     }
     /// set finished time
-    pub fn set_finished_time(&self, value: f64) {
+    pub(crate) fn set_finished_time(&self, value: f64) {
         *self.finished_time.write().unwrap() = value;
     }
     /// get finished time
-    pub fn get_finished_time(&self) -> f64 {
+    pub(crate) fn get_finished_time(&self) -> f64 {
         *self.finished_time.read().unwrap()
     }
     /// get history length
-    pub fn get_history_len(&self) -> usize {
+    pub(crate) fn get_history_len(&self) -> usize {
         if let Ok(r) = self.history.read() {
             r.len()
         } else {
@@ -186,7 +186,7 @@ impl ScanData {
         }
     }
     /// get result length
-    pub fn get_result_len(&self) -> usize {
+    pub(crate) fn get_result_len(&self) -> usize {
         match self.results.lock() {
             Ok(r) => match &*r {
                 ScanResultType::Host(data) => data.len(),
@@ -209,8 +209,8 @@ impl ScanData {
 }
 
 #[derive(Debug, Clone)]
-pub struct SystemInfoData {
-    pub iface: InterfaceData,
+pub(crate) struct SystemInfoData {
+    pub(crate) iface: InterfaceData,
 }
 impl Default for SystemInfoData {
     fn default() -> Self {
@@ -221,10 +221,11 @@ impl Default for SystemInfoData {
 }
 /// network interface infomation
 #[derive(Debug, Default, Clone)]
-pub struct InterfaceData {
-    pub index: Option<u32>,
-    pub local_addr: Option<IpAddr>,
-    pub gateway: Option<interface::Gateway>,
+pub(crate) struct InterfaceData {
+    #[allow(unused)]
+    pub(crate) index: Option<u32>,
+    pub(crate) local_addr: Option<IpAddr>,
+    pub(crate) gateway: Option<interface::Gateway>,
 }
 impl InterfaceData {
     fn new() -> Self {

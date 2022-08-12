@@ -6,13 +6,13 @@ use iced::{
     button, scrollable, Alignment, Button, Column, Element, Length, Row, Rule, Scrollable, Text,
 };
 #[derive(Debug, Clone)]
-pub enum DisplayMessage {
+pub(crate) enum DisplayMessage {
     ScrollToTop,
     ScrollToBottom,
     Scrolled(f32),
 }
 #[derive(Debug, Clone)]
-pub struct DisplayContent {
+pub(crate) struct DisplayContent {
     scrollable: scrollable::State,
     scroll_to_top: button::State,
     scroll_to_bottom: button::State,
@@ -29,7 +29,7 @@ impl Default for DisplayContent {
     }
 }
 impl DisplayContent {
-    pub fn view(&mut self) -> Element<DisplayMessage> {
+    pub(crate) fn view(&mut self) -> Element<'_, DisplayMessage> {
         let contxt_count = DATAS.scan.get_result_len();
         let mut num = 0;
         let mut contxt = Column::new();
@@ -127,7 +127,7 @@ impl DisplayContent {
         }
     }
     // scroll event occur to update
-    pub fn update(&mut self, msg: DisplayMessage) {
+    pub(crate) fn update(&mut self, msg: DisplayMessage) {
         match msg {
             DisplayMessage::ScrollToTop => {
                 self.scrollable.snap_to(0.0);
